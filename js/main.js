@@ -57,7 +57,10 @@ function preload() {
         audio: {
             flap: ['assets/flap.wav'],
             score: ['assets/score.wav'],
-            hurt: ['assets/hurt.wav']
+            hurt: ['assets/hurt.wav'],
+            hurt2: ['assets/hurt2.wav'],
+            hurt3: ['assets/hurt3.wav']
+            
         }
     };
     Object.keys(assets).forEach(function(type) {
@@ -101,7 +104,7 @@ function create() {
     credits = game.add.text(
         game.world.width / 2,
         10,
-        'github.com/robertobarrosx\n@robertobarrosx',
+        'github.com/kalytalarica\n@robertobarrosx',
         {
             font: '8px "Press Start 2P"',
             fill: '#000',
@@ -202,7 +205,11 @@ function create() {
     // Add sounds
     flapSnd = game.add.audio('flap');
     scoreSnd = game.add.audio('score');
-    hurtSnd = game.add.audio('hurt');
+    hurtSnd = [ game.add.audio('hurt'),
+               game.add.audio('hurt2'),
+               game.add.audio('hurt3')
+    ];
+
     // Add controls
     game.input.onDown.add(flap);
     game.input.keyboard.addCallbacks(game, onKeyDown, onKeyUp);
@@ -310,7 +317,7 @@ function spawndedo(dedoY, flipped) {
     dedo.scale.setTo(2, flipped ? -2 : 2);
     dedo.body.offset.y = flipped ? -dedo.body.height * 2 : 0;
 
-    // Move to the left
+    // Mover o dedo para a esquerda
     dedo.body.velocity.x = -SPEED;
 
     return dedo;
@@ -320,12 +327,12 @@ function spawndedos() {
     dedosTimer.stop();
 
     var dedoY = ((game.height - 16 - o() / 2) / 2) + (Math.random() > 0.5 ? -1 : 1) * Math.random() * game.height / 6;
-    // Bottom dedo
+    // Dedo do chão
     var botdedo = spawndedo(dedoY);
-    // Top dedo (flipped)
+    // Dedo do Topo (flipped)
     var topdedo = spawndedo(dedoY, true);
 
-    // Add invisible thingy
+    // Adicionar linha invisivel
     var inv = invs.create(topdedo.x + topdedo.width, 0);
     inv.width = 2;
     inv.height = game.world.height;
@@ -358,18 +365,18 @@ function setGameOver() {
     if (score > 0) {
 	    postScoreText.renderable = true;
 	}  
-    // Stop all dedos
+    // Parar todos os dedos
     dedos.forEachAlive(function(dedo) {
         dedo.body.velocity.x = 0;
     });
     invs.forEach(function(inv) {
         inv.body.velocity.x = 0;
     });
-    // Stop spawning dedos
+    // Parar de spwanar dedos
     dedosTimer.stop();
-    // Make kalyta reset the game
+    // Ao tocar na kalyta resetar o jogo
     kalyta.events.onInputDown.addOnce(reset);
-    hurtSnd.play();
+    hurtSnd[Math.floor(Math.random() * hurtSnd.length)].play();
     gameOvers++;
 }
 
